@@ -1,0 +1,45 @@
+@import '../../styles/base.scss';
+
+.navbar {
+  background: $white;
+  box-shadow: 0 0 10px $grey;
+
+  padding: 10px 40px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &__title {
+    color: $blue-3;
+
+    font-size: 40px;
+    margin: 0 0 0 20px;
+  }
+
+  &__user {
+    background: $blue-3;
+
+    height: 30px;
+    width: 100px;
+
+    border-radius: 5px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.login-link-text {
+  color: $white;
+}
+
+.accounts-dialog {
+  transform: translate(-61%, 0)
+}
+
+.login-close-text {
+  position: relative;
+  left: 165px;
+}

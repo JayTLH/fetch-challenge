@@ -9,10 +9,9 @@ export const Data = new Mongo.Collection('data');
 const sample = Assets.getText('data.csv')
 const parse = Papa.parse(sample).data
 
-console.log(parse[2822])
-
-// On server startup, if the database is empty, import data.
+// code only runs on the server
 if (Meteor.isServer) {
+  // On server startup, if the database is empty, import data.
   Meteor.startup(() => {
     if (Data.find().count() === 0) {
       for (let i = 1; i < parse.length; i++) {
@@ -26,4 +25,8 @@ if (Meteor.isServer) {
       }
     }
   });
+
+  Meteor.publish('data', function dataPublication() {
+    return Tasks.find();
+  })
 }
