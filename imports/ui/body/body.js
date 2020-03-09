@@ -5,8 +5,8 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import './body.html';
 import './body.scss';
 
-import '../navbar/navbar.js';
-import '../search/search.js';
+import '../components/navbar/navbar.js';
+import '../components/search/search.js';
 
 Template.body.onCreated(function bodyOnCreated() {
   this.state = new ReactiveDict();
