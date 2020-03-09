@@ -1,0 +1,22 @@
+@import '../../../styles/base.scss';
+
+.room {
+  background: $light-grey;
+
+  height: 40px;
+
+  border-radius: 10px;
+  margin: 5px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &__info {
+    text-align: center;
+
+    width: 100px;
+
+    margin: 0;
+  }
+}
