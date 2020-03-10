@@ -2,8 +2,8 @@
   <div class="room">
     <p class="room__info">{{room}}</p>
     <p class="room__info">{{rating.length}}x</p>
-    <p class="room__info">{{dissatisfied}}%</p>
-    <p class="room__info">{{average}}</p>
+    <p class="room__info {{#if dissatisfied}}red{{/if}}">{{dissatisfied}}%</p>
+    <p class="room__info {{#if red}}red{{/if}} {{#if yellow}}yellow{{/if}} {{#if green}}green{{/if}}">{{average}}</p>
     <p class="room__info">{{lastModified}}</p>
   </div>
 </template>
