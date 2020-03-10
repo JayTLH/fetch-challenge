@@ -8,7 +8,7 @@ import './overview.scss';
 
 import '../room/room.js';
 
-Template.overview.onCreated(function bodyOnCreated() {
+Template.overview.onCreated(function overviewOnCreated() {
   // creating state
   this.state = new ReactiveDict();
 
@@ -85,6 +85,7 @@ Template.overview.helpers({
     })
 
     const instance = Template.instance()
+
     // sort functions when appropriate elements are clicked
     if (instance.state.get('sort') === "roomDown") {
       objectValues.sort((a, b) => Number(a.room) < Number(b.room) ? -1 : 1)
@@ -104,10 +105,28 @@ Template.overview.helpers({
       objectValues.sort((a, b) => a.average < b.average ? -1 : 1)
     }
 
+    // search for a specific room number
+    const search = objectValues.filter(index => index.room === instance.state.get('search'))
+
     // limiting amount of results shown until the user decides to load more
     const shown = objectValues.slice(0, Number(instance.state.get('loadRooms')))
 
-    return shown
+    // hides the load more button when all the results are displayed
+    if (shown.length === objectValues.length || search.length > 0) {
+      instance.state.set('full', 'full')
+    } else {
+      instance.state.set('full', null)
+    }
+
+    if (instance.state.get('search')) {
+      return search
+    } else {
+      return shown
+    }
+  },
+
+  full() {
+    return Template.instance().state.get('full')
   }
 });
 
@@ -142,8 +161,16 @@ Template.overview.events({
     }
   },
 
+  // search by room number
+  'submit .overview__search'(event, instance) {
+    event.preventDefault()
+    instance.state.set('search', event.target.search.value)
+    instance.state.set('loadRooms', 20)
+    event.target.search.value = ''
+  },
+
   // increasing the amount of results shown
   'click .overview__load'(event, instance) {
     instance.state.set('loadRooms', Number(instance.state.get('loadRooms')) + 20)
   }
-})
+});
