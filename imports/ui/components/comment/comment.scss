@@ -1,0 +1,18 @@
+@import '../../../styles/base.scss';
+
+.comment {
+  background: $light-grey;
+
+  width: 265px;
+
+  padding: 10px;
+  margin: 10px 0;
+
+  display: flex;
+  justify-content: center;
+
+  &__info {
+    padding: 6px;
+    margin: 0;
+  }
+}

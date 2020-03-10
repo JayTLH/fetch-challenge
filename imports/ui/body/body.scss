@@ -1,5 +1,6 @@
 @import '../../styles/base.scss';
 
+// initial setup
 body {
   font-family: sans-serif;
   box-sizing: border-box;
@@ -22,11 +23,187 @@ body {
   box-sizing: inherit;
 }
 
-main {
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $light-grey;
+
+  border-bottom-right-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $grey;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $dark-grey;
+}
+
+// main container for content
+.main {
   padding: 20px;
 
   &__content {
     display: flex;
     flex-wrap: wrap;
   }
+}
+
+// overview component
+.overview {
+  &__search {
+    margin: 0 0 20px 0;
+
+    display: flex;
+  }
+
+  &__input {
+    height: 35px;
+    width: 225px;
+
+    padding: 0 0 0 20px;
+    border: none;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    margin: 0;
+
+    font-size: 16px;
+  }
+
+  &__button {
+    background: $blue-3;
+    color: $white;
+
+    height: 35px;
+    width: 80px;
+
+    border: none;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+
+    font-size: 16px;
+  }
+
+  &__display {
+    background: $orange;
+
+    height: 555px;
+    width: 550px;
+
+    border-radius: 8px;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__labels {
+    display: flex;
+  }
+
+  &__label {
+    text-align: center;
+
+    width: 110px;
+
+    cursor: pointer;
+  }
+
+  &__list {
+    background: $white;
+
+    height: 480px;
+    width: 540px;
+
+    padding: 0;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    margin: 0;
+
+    overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__load {
+    background: $blue-3;
+    color: $white;
+
+    height: 30px;
+    width: 90px;
+
+    border: none;
+    border-radius: 10px;
+    margin: 20px auto;
+
+    flex-shrink: 0;
+  }
+}
+
+// comments component
+.comments {
+  background: $blue-3;
+
+  height: 555px;
+  width: 300px;
+
+  border-radius: 8px;
+  margin: 55px 0 0 16px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__title {
+    font-weight: 400;
+
+    height: 68px;
+
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+  }
+
+  &__list {
+    background: $white;
+
+    height: 480px;
+    width: 280px;
+
+    padding: 0;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    margin: 0;
+
+    overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__load {
+    background: $blue-3;
+    color: $white;
+
+    height: 30px;
+    width: 90px;
+
+    border: none;
+    border-radius: 10px;
+    margin: 20px auto;
+
+    flex-shrink: 0;
+  }
+}
+
+// hide the load more button when all results are displayed
+.full {
+  display: none;
 }
