@@ -9,10 +9,14 @@ import './overview.scss';
 import '../room/room.js';
 
 Template.overview.onCreated(function bodyOnCreated() {
-  // setting state
+  // creating state
   this.state = new ReactiveDict();
-  // setting inital sort to room low to high
+
+  // setting inital state to sort the room column from low to high
   this.state.set('sort', 'roomDown')
+  // setting state to load only 20 results on startup
+  this.state.set('loadRooms', 20)
+
   // setting subscription to the collection on the server
   Meteor.subscribe('data');
 });
@@ -21,9 +25,12 @@ Template.overview.helpers({
   data() {
     // retrieve data from collection
     const rooms = Data.find({ room: { $ne: "null" } }).fetch()
+    const filter = rooms.filter(item => item.room != "")
+
+    // ***JASON***
     // tried to filter all rooms using $or but it kept returning every document, could other wise skip a step 
     // const rooms = Data.find({ $or: [{ room: { $ne: "null" } }, { room: { $ne: "" } }] }).fetch()
-    const filter = rooms.filter(item => item.room != "")
+    // ***JASON***
 
     const stats = {}
     filter.forEach(item => {
@@ -47,7 +54,6 @@ Template.overview.helpers({
     })
 
     let objectValues = Object.values(stats)
-
     // calculate for dissatisfaction and average rating, provide last rated date
     objectValues.forEach(value => {
       let badRating = value.rating.filter(index => index < 7).length
@@ -75,7 +81,6 @@ Template.overview.helpers({
         .split('')
         .slice(4, 15)
         .join('')
-
       stats[value.room].lastModified = trim
     })
 
@@ -83,29 +88,26 @@ Template.overview.helpers({
     // sort functions when appropriate elements are clicked
     if (instance.state.get('sort') === "roomDown") {
       objectValues.sort((a, b) => Number(a.room) < Number(b.room) ? -1 : 1)
-      return objectValues
     } else if (instance.state.get('sort') === "roomUp") {
       objectValues.sort((a, b) => Number(a.room) > Number(b.room) ? -1 : 1)
-      return objectValues
     } else if (instance.state.get('sort') === "frequencyDown") {
       objectValues.sort((a, b) => a.rating.length > b.rating.length ? -1 : 1)
-      return objectValues
     } else if (instance.state.get('sort') === "frequencyUp") {
       objectValues.sort((a, b) => a.rating.length < b.rating.length ? -1 : 1)
-      return objectValues
     } else if (instance.state.get('sort') === "percentageDown") {
       objectValues.sort((a, b) => a.dissatisfied > b.dissatisfied ? -1 : 1)
-      return objectValues
     } else if (instance.state.get('sort') === "percentageUp") {
       objectValues.sort((a, b) => a.dissatisfied < b.dissatisfied ? -1 : 1)
-      return objectValues
     } else if (instance.state.get('sort') === "averageDown") {
       objectValues.sort((a, b) => a.average > b.average ? -1 : 1)
-      return objectValues
     } else if (instance.state.get('sort') === "averageUp") {
       objectValues.sort((a, b) => a.average < b.average ? -1 : 1)
-      return objectValues
     }
+
+    // limiting amount of results shown until the user decides to load more
+    const shown = objectValues.slice(0, Number(instance.state.get('loadRooms')))
+
+    return shown
   }
 });
 
@@ -139,4 +141,9 @@ Template.overview.events({
       instance.state.set('sort', 'averageDown')
     }
   },
+
+  // increasing the amount of results shown
+  'click .overview__load'(event, instance) {
+    instance.state.set('loadRooms', Number(instance.state.get('loadRooms')) + 20)
+  }
 })

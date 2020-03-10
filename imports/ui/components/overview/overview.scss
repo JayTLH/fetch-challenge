@@ -1,4 +1,4 @@
-@import '../../../styles/base.scss';
+@import "../../../styles/base.scss";
 
 .overview {
   background: $orange;
@@ -37,6 +37,24 @@
     margin: 0;
 
     overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__load {
+    background: $blue-3;
+    color: $white;
+
+    height: 30px;
+    width: 90px;
+
+    border: none;
+    border-radius: 10px;
+    margin: 20px auto;
+
+    flex-shrink: 0;
   }
 }
 
