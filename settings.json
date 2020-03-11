@@ -1,0 +1,7 @@
+{
+  "galaxy.meteor.com": {
+    "env": {
+      "MONGO_URL": "mongodb+srv://admin:password1324@cluster0-zc1du.mongodb.net/test?retryWrites=true&w=majority"
+    }
+  }
+}
