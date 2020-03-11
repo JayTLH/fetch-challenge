@@ -1,4 +1,4 @@
-@import '../../styles/base.scss';
+@import "../../styles/base.scss";
 
 // initial setup
 body {
@@ -203,7 +203,74 @@ body {
   }
 }
 
+.history {
+  background: $light-green;
+
+  height: 555px;
+  width: 300px;
+
+  border-radius: 8px;
+  margin: 55px 0 0 16px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__title {
+    font-weight: 400;
+
+    height: 68px;
+
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+  }
+
+  &__content {
+    background: $white;
+
+    height: 480px;
+    width: 280px;
+
+    padding: 0;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    margin: 0;
+
+    // overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__display {
+    background: $white;
+
+    height: 480px;
+    width: 280px;
+
+    padding: 0;
+    // border-bottom-left-radius: 8px;
+    // border-bottom-right-radius: 8px;
+    margin: 0;
+
+    overflow-y: scroll;
+    overflow-x: none;
+
+    display: none;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
 // hide the load more button when all results are displayed
 .full {
   display: none;
+}
+
+// reveal graphs when room is selected
+.show {
+  display: flex;
 }

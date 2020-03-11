@@ -28,13 +28,33 @@
       </div>
 
       <div class="comments">
-        <h3 class="comments__title">Room Comments (Rm. {{commentRoomNumber}})</h3>
+        <h3 class="comments__title">Room Comments (Rm. {{currentRoomNumber}})</h3>
         <ul class="comments__list">
+          {{#unless currentRoomNumber}}
+            <p class="history__nothing">No room selected.</p>
+          {{/unless}}
           {{#each comments}} 
             {{> comment}}
           {{/each}}
           <button class="comments__load {{fullComments}}">Load More</button>
         </ul>
+      </div>
+
+      <div class="history">
+        <h3 class="history__title">Room History (Rm. {{currentRoomNumber}})</h3>
+        <div class="history__content">
+          {{#unless currentRoomNumber}}
+            <p class="history__nothing">No room selected.</p>
+          {{/unless}}
+          <div class="history__display {{showGraphs}}">
+            <p>Room Activity</p>
+            <canvas id="roomActivity" width="250"></canvas>
+            <p>Satisfaction Overview</p>
+            <canvas id="satisfactionOverview" width="250"></canvas>
+            <p>Satifaction History</p>
+            <canvas id="satifactionHistory" width="250"></canvas>
+          </div>
+        </div>
       </div>
     </div>
   </main>

@@ -1,5 +1,6 @@
 import { Template } from 'meteor/templating';
 import { ReactiveDict } from 'meteor/reactive-dict';
+import Chart from 'chart.js';
 
 import { Data } from '../../api/data.js';
 
@@ -69,11 +70,8 @@ Template.body.helpers({
       let dissatisfied = Math.floor(badRating / value.rating.length * 100)
       stats[value.room].dissatisfied = dissatisfied
 
-      let avg = 0
-      value.rating.forEach(num => {
-        avg += Number(num)
-      })
-      let result = Math.floor(avg / value.rating.length)
+      const sumAvgArray = value.rating.reduce((prev, curr) => Number(prev) + Number(curr), 0)
+      let result = Math.floor(sumAvgArray / value.rating.length)
       stats[value.room].average = result
 
       // applying color to rating
@@ -86,10 +84,7 @@ Template.body.helpers({
       }
 
       // trimming date information, potentially change to regex
-      const trim = value.ratingDate[value.ratingDate.length - 1]
-        .split('')
-        .slice(4, 15)
-        .join('')
+      const trim = value.ratingDate[value.ratingDate.length - 1].slice(4, 15)
       stats[value.room].lastModified = trim
     })
 
@@ -141,10 +136,10 @@ Template.body.helpers({
     const instance = Template.instance()
 
     // find the comments for the clicked room
-    const findComments = instance.state.get('allData').find(index => index.room === instance.state.get('displayComments'))
+    const findComments = instance.state.get('allData').find(index => index.room === instance.state.get('display'))
     instance.state.set('fullComments', 'full')
 
-    if (instance.state.get('displayComments')) {
+    if (instance.state.get('display')) {
       const commentArray = []
       findComments.comments.forEach(com => commentArray.push({ comment: com }))
 
@@ -156,21 +151,30 @@ Template.body.helpers({
       if (commentArray.length > 0) {
         return commentArray
       } else {
-        return [{comment: "This room has no comments"}]
+        return [{ comment: "This room has no comments" }]
       }
     } else {
-      return [{ comment: "No room selected." }]
+      return []
     }
   },
 
-  // returns the room number that was clicked to display on the comment section title
-  commentRoomNumber() {
-    return Template.instance().state.get('displayComments')
+  // returns the room number that was clicked
+  currentRoomNumber() {
+    return Template.instance().state.get('display')
   },
 
   fullComments() {
     return Template.instance().state.get('fullComments')
   },
+
+  // reveal graphs when room is selected
+  showGraphs() {
+    if (Template.instance().state.get('display')) {
+      return 'show'
+    } else {
+      return null
+    }
+  }
 });
 
 Template.body.events({
@@ -219,8 +223,147 @@ Template.body.events({
 
   // getting more info on a specific room
   'click .room'(event, instance) {
-    instance.state.set('displayComments', event.target.id)
+    instance.state.set('display', event.target.id)
     instance.state.set('loadComments', 10)
+
+    const graphData = instance.state.get('allData').find(index => event.target.id === index.room)
+
+    // creating date calculation function
+    function calcDate(num) {
+      let maxDate = moment()
+      let minDate = maxDate.subtract(num, 'months')
+      return minDate.format('MMM')
+    }
+
+    // creating counters for rating frequency
+    const roomActivityData = { [calcDate(5)]: 0, [calcDate(4)]: 0, [calcDate(3)]: 0, [calcDate(2)]: 0, [calcDate(1)]: 0, [calcDate(0)]: 0 }
+    // creating counters for each rating
+    const satisfactionOverviewData = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0 }
+    // creating averages for each month
+    const satifactionHistoryData = { [calcDate(5)]: 0, [calcDate(4)]: 0, [calcDate(3)]: 0, [calcDate(2)]: 0, [calcDate(1)]: 0, [calcDate(0)]: 0 }
+    const avgArray = []
+
+    graphData.rating.forEach((rating, index) => {
+      // formatting date to ISO
+      const day = graphData.ratingDate[index].slice(8, 10)
+      const strMonth = graphData.ratingDate[index].slice(4, 7)
+      const month = new Date(Date.parse(strMonth + " 1, 2012")).getMonth() + 1
+      const year = graphData.ratingDate[index].slice(11, 15)
+      let formatMonth = null
+      if (month < 10) {
+        formatMonth = "0" + month
+      } else {
+        formatMonth = month
+      }
+      const date = year + "-" + formatMonth + "-" + day
+
+      // condition to check to see if data is within the past 6 months
+      if (moment().subtract(6, 'months') < moment(date)) {
+        // adding in the rating frequency to the respective key
+        roomActivityData[strMonth] += 1
+
+        // adding average rating to the respective key
+        avgArray.push(rating)
+        const sumAvgArray = avgArray.reduce((prev, curr) => Number(prev) + Number(curr), 0)
+        satifactionHistoryData[strMonth] = Math.floor(sumAvgArray / avgArray.length)
+      }
+
+      // incrementing counter to respective key
+      satisfactionOverviewData[rating] += 1
+    })
+
+    // small formatting on satifactionHistoryData
+    const formatHistoryKeys = Object.keys(satifactionHistoryData)
+    const formatHistoryValues = Object.values(satifactionHistoryData)
+    formatHistoryKeys.forEach((key, index) => {
+      if (satifactionHistoryData[key] === 0) {
+        formatHistoryValues.splice(index, 1, formatHistoryValues[index - 1])
+        satifactionHistoryData[key] = formatHistoryValues[index]
+      }
+    })
+
+    // displaying graphs
+    const roomActivity = new Chart(instance.find('#roomActivity'), {
+      type: 'line',
+      data: {
+        labels: [calcDate(5), calcDate(4), calcDate(3), calcDate(2), calcDate(1), calcDate(0)],
+        datasets: [{
+          label: 'Frequency of Ratings',
+          data: Object.values(roomActivityData),
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              precision: 0,
+            }
+          }]
+        },
+        tooltips: {
+          enabled: false
+        }
+      }
+    })
+
+    const satisfactionOverview = new Chart(instance.find('#satisfactionOverview'), {
+      type: 'bar',
+      data: {
+        labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        datasets: [{
+          label: '# of Ratings',
+          data: Object.values(satisfactionOverviewData),
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              precision: 0
+            }
+          }]
+        },
+        tooltips: {
+          enabled: false
+        }
+      }
+    })
+
+    const satifactionHistory = new Chart(instance.find('#satifactionHistory'), {
+      type: 'line',
+      data: {
+        labels: [calcDate(5), calcDate(4), calcDate(3), calcDate(2), calcDate(1), calcDate(0)],
+        datasets: [{
+          label: 'Average Rating',
+          data: Object.values(satifactionHistoryData),
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              precision: 0,
+              max: 10
+            }
+          }]
+        },
+        tooltips: {
+          enabled: false
+        }
+      }
+    })
   },
 
   // increase the amount of comments shown
