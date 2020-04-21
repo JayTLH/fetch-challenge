@@ -1,6 +1,6 @@
 # Fetch Tech Challenge
 
-The demo for the project can be found here: (http://jason-fetch-challenge.meteorapp.com/)<br>
+~~The demo for the project can be found here: (http://jason-fetch-challenge.meteorapp.com/)~~<br>
 
 This is a coding challenge for Fetch Feedback INC to create an analytics dashboard using sample data.<br>
 
