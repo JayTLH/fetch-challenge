@@ -14,7 +14,7 @@
     "chart.js": "^2.9.3",
     "jquery": "^3.4.1",
     "meteor-node-stubs": "^1.0.0",
-    "papaparse": "^5.1.1"
+    "papaparse": "^5.2.0"
   },
   "meteor": {
     "mainModule": {
